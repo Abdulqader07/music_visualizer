@@ -1,0 +1,14 @@
+[project]
+name = "audio-visualizer"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "audioread>=3.1.0",
+    "matplotlib>=3.11.0",
+    "numpy>=2.5.0",
+    "pygame>=2.6.1",
+    "scipy>=1.18.0",
+    "soundfile>=0.14.0",
+]
