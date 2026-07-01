@@ -29,7 +29,6 @@ def playAudio():
 pygame.init()
 
 # Extract bands
-
 bass, mids, treble, sampleRate = extract_bands("Yeat - Every month.mp3")
 numFrames = len(bass)
 
@@ -90,49 +89,55 @@ while running:
     circle_radius = BASE_RADIUS
     pygame.gfxdraw.aacircle(screen, X_CENTER, Y_CENTER, int(circle_radius), CIRCLE_COLOR)
     
-    # Wave offsets
-    wave_in_offset = smooth_bass * 60
-    wave_out_offset = smooth_treble * 60
+    # Wave offsets (all push outward)
+    bass_offset = smooth_bass * 60
+    mids_offset = smooth_mids * 50
+    treble_offset = smooth_treble * 40
     
     # Draw waves
-    points_in = []
-    points_out = []
-    points_mid = []
+    points_bass = []
+    points_mids = []
+    points_treble = []
     
     num_points = 60
     for i in range(num_points):
         angle = (i / num_points) * 2 * math.pi
         
-        # Inner wave (bass)
-        inner_radius = circle_radius + wave_in_offset * (0.5 + 0.5 * math.sin(angle * 2))
-        x_in = X_CENTER + inner_radius * math.cos(angle)
-        y_in = Y_CENTER + inner_radius * math.sin(angle)
-        points_in.append((x_in, y_in))
+        # Bass wave (outer)
+        bass_radius = circle_radius + bass_offset * (0.5 + 0.5 * math.sin(angle * 2))
+        x_bass = X_CENTER + bass_radius * math.cos(angle)
+        y_bass = Y_CENTER + bass_radius * math.sin(angle)
+        points_bass.append((x_bass, y_bass))
         
-        # Outer wave (treble)
-        outer_radius = circle_radius + wave_out_offset * (0.5 + 0.5 * math.cos(angle * 3))
-        x_out = X_CENTER + outer_radius * math.cos(angle)
-        y_out = Y_CENTER + outer_radius * math.sin(angle)
-        points_out.append((x_out, y_out))
+        # Mids wave (outer)
+        mids_radius = circle_radius + mids_offset * (0.5 + 0.5 * math.cos(angle * 3))
+        x_mids = X_CENTER + mids_radius * math.cos(angle)
+        y_mids = Y_CENTER + mids_radius * math.sin(angle)
+        points_mids.append((x_mids, y_mids))
         
-        # Mid wave (mids)
-        mid_radius = circle_radius + (smooth_mids * 40) * math.sin(angle * 4)
-        x_mid = X_CENTER + mid_radius * math.cos(angle)
-        y_mid = Y_CENTER + mid_radius * math.sin(angle)
-        points_mid.append((x_mid, y_mid))
+        # Treble wave (outer)
+        treble_radius = circle_radius + treble_offset * (0.5 + 0.5 * math.sin(angle * 4 + 0.5))
+        x_treble = X_CENTER + treble_radius * math.cos(angle)
+        y_treble = Y_CENTER + treble_radius * math.sin(angle)
+        points_treble.append((x_treble, y_treble))
     
-    # Draw waves
-    if len(points_in) > 2:
-        pygame.draw.lines(screen, (100, 150, 255), True, points_in, 2)
-        for point in points_in[::3]:
+    # Draw bass wave (blue)
+    if len(points_bass) > 2:
+        pygame.draw.lines(screen, (100, 150, 255), True, points_bass, 2)
+        for point in points_bass[::3]:
             pygame.draw.circle(screen, (100, 150, 255), (int(point[0]), int(point[1])), 3)
-    if len(points_out) > 2:
-        pygame.draw.lines(screen, (255, 200, 100), True, points_out, 2)
-        for point in points_out[::3]:
-            pygame.draw.circle(screen, (255, 200, 100), (int(point[0]), int(point[1])), 3)
     
-    if len(points_mid) > 2:
-        pygame.draw.lines(screen, (100, 255, 150), True, points_mid, 1)
+    # Draw mids wave (green)
+    if len(points_mids) > 2:
+        pygame.draw.lines(screen, (100, 255, 150), True, points_mids, 2)
+        for point in points_mids[::3]:
+            pygame.draw.circle(screen, (100, 255, 150), (int(point[0]), int(point[1])), 3)
+    
+    # Draw treble wave (yellow)
+    if len(points_treble) > 2:
+        pygame.draw.lines(screen, (255, 200, 100), True, points_treble, 1)
+        for point in points_treble[::3]:
+            pygame.draw.circle(screen, (255, 200, 100), (int(point[0]), int(point[1])), 2)
     
     pygame.display.flip()
     clock.tick(60)
