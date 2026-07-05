@@ -5,6 +5,7 @@ import time
 import numpy as np
 import pygame.gfxdraw
 from processing import extract_bands
+from files import selectAudio
 
 WIDTH = 1080
 HEIGHT = 720
@@ -18,18 +19,24 @@ BASS_GAIN = 1.2
 MIDS_GAIN = 2.0      
 TREBLE_GAIN = 3.3 
 
-BACKGROUND_COLOR = (10, 10, 20)
-CIRCLE_COLOR = (100, 200, 255)
+BACKGROUND_COLOR = (39, 36, 41)
+CIRCLE_COLOR = (231, 200, 247)
+
+audio_file = selectAudio()
+
+if not audio_file:
+    print('error no file')
+    exit()
 
 def playAudio():
     pygame.mixer.init(buffer=512)
-    pygame.mixer.music.load("Yeat - Every month.mp3")
+    pygame.mixer.music.load(audio_file)
     pygame.mixer.music.play()
 
 pygame.init()
 
 # Extract bands
-bass, mids, treble, sampleRate = extract_bands("Yeat - Every month.mp3")
+bass, mids, treble, sampleRate = extract_bands(audio_file)
 numFrames = len(bass)
 
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
@@ -65,6 +72,14 @@ while running:
     
     if target_frame >= numFrames:
         target_frame = numFrames - 1
+
+        # Auto-close after 3 seconds when song ends
+    if target_frame >= numFrames - 1 and not pygame.mixer.music.get_busy():
+        pygame.display.flip()
+        pygame.time.wait(3000)  # 3 seconds
+        running = False
+        break
+    
     if target_frame < 0:
         target_frame = 0
     
@@ -123,21 +138,21 @@ while running:
     
     # Draw bass wave (blue)
     if len(points_bass) > 2:
-        pygame.draw.lines(screen, (100, 150, 255), True, points_bass, 2)
+        pygame.draw.lines(screen, (240, 19, 104), True, points_bass, 2)
         for point in points_bass[::3]:
-            pygame.draw.circle(screen, (100, 150, 255), (int(point[0]), int(point[1])), 3)
+            pygame.draw.circle(screen, (242, 34, 110), (int(point[0]), int(point[1])), 3)
     
     # Draw mids wave (green)
     if len(points_mids) > 2:
-        pygame.draw.lines(screen, (100, 255, 150), True, points_mids, 2)
+        pygame.draw.lines(screen, (245, 159, 191), True, points_mids, 2)
         for point in points_mids[::3]:
-            pygame.draw.circle(screen, (100, 255, 150), (int(point[0]), int(point[1])), 3)
+            pygame.draw.circle(screen, (245, 174, 200), (int(point[0]), int(point[1])), 3)
     
     # Draw treble wave (yellow)
     if len(points_treble) > 2:
-        pygame.draw.lines(screen, (255, 200, 100), True, points_treble, 1)
+        pygame.draw.lines(screen, (185, 73, 245), True, points_treble, 1)
         for point in points_treble[::3]:
-            pygame.draw.circle(screen, (255, 200, 100), (int(point[0]), int(point[1])), 2)
+            pygame.draw.circle(screen, (183, 93, 232), (int(point[0]), int(point[1])), 2)
     
     pygame.display.flip()
     clock.tick(60)

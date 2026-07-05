@@ -11,7 +11,7 @@ def extract_bands(audio_file, chunk_size=2048, hop_length=1024):
         data = np.mean(data, axis=1)
     
     # Process in chunks
-    bass_list, mids_list,treble_list = [], [], []
+    bass_list, mids_list, treble_list = [], [], []
     
     for i in range(0, len(data) - chunk_size, hop_length):
         chunk = data[i:i + chunk_size]
